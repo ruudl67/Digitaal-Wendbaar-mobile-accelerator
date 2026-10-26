@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.2.1
+- Async CSS werkt nu ook voor stylesheets met een media-query (Elementor v4/Atomic breakpoint-bestanden zoals `base-mobile.css`); media-query blijft behouden. Alleen print-CSS wordt overgeslagen.
+
 ## 0.2.0
 - Niet meer vast aan één pagina/site: instellingen per pagina via meta-box, algemene opties voor geselecteerde pagina's of hele site.
 - Critical CSS per pagina; overige CSS dan asynchroon.

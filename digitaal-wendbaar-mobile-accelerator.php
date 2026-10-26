@@ -3,7 +3,7 @@
  * Plugin Name:       Digitaal Wendbaar Mobile Accelerator
  * Plugin URI:        https://github.com/ruudl67/digitaal-wendbaar-mobile-accelerator
  * Description:       Gerichte mobiele snelheidsoptimalisaties voor Elementor-sites: critical CSS, LCP-preload, jQuery- en scriptoptimalisatie. Werkt naast SiteGround Speed Optimizer.
- * Version:           0.2.0
+ * Version:           0.2.1
  * Requires at least: 6.3
  * Requires PHP:      7.4
  * Author:            Digitaal Wendbaar
@@ -21,7 +21,7 @@ if (!defined('ABSPATH')) {
 
 final class DW_Mobile_Accelerator {
 
-    const VERSION  = '0.2.0';
+    const VERSION  = '0.2.1';
     const OPTION   = 'dwma_settings';
     const META     = '_dwma_page';
     const NONCE    = 'dwma_page_nonce';
@@ -235,7 +235,9 @@ final class DW_Mobile_Accelerator {
         if (!$href) {
             return $html;
         }
-        if (!in_array((string) $media, ['all', 'screen', ''], true)) {
+        // Print-stylesheets ongemoeid laten; andere media (bijv. Elementor v4 breakpoint-bestanden) blijven hun media-query houden.
+        $media = trim((string) $media);
+        if (false !== stripos($media, 'print')) {
             return $html;
         }
 
@@ -254,11 +256,13 @@ final class DW_Mobile_Accelerator {
 
         $id  = esc_attr($handle . '-css');
         $url = esc_url($href);
+        $mq  = ('' === $media || 'all' === $media) ? '' : ' media="' . esc_attr($media) . '"';
 
         return sprintf(
-            "<link rel=\"preload\" as=\"style\" id=\"%1\$s\" href=\"%2\$s\" onload=\"this.onload=null;this.rel='stylesheet'\">\n<noscript><link rel=\"stylesheet\" href=\"%2\$s\"></noscript>\n",
+            "<link rel=\"preload\" as=\"style\" id=\"%1\$s\" href=\"%2\$s\"%3\$s onload=\"this.onload=null;this.rel='stylesheet'\">\n<noscript><link rel=\"stylesheet\" href=\"%2\$s\"%3\$s></noscript>\n",
             $id,
-            $url
+            $url,
+            $mq
         );
     }
 
