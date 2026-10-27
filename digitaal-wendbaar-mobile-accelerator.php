@@ -3,7 +3,7 @@
  * Plugin Name:       Digitaal Wendbaar Mobile Accelerator
  * Plugin URI:        https://github.com/ruudl67/digitaal-wendbaar-mobile-accelerator
  * Description:       Gerichte mobiele snelheidsoptimalisaties voor Elementor-sites: critical CSS, LCP-preload, jQuery- en scriptoptimalisatie. Werkt naast SiteGround Speed Optimizer.
- * Version:           0.2.1
+ * Version:           0.3.0
  * Requires at least: 6.3
  * Requires PHP:      7.4
  * Author:            Digitaal Wendbaar
@@ -21,7 +21,7 @@ if (!defined('ABSPATH')) {
 
 final class DW_Mobile_Accelerator {
 
-    const VERSION  = '0.2.1';
+    const VERSION  = '0.3.0';
     const OPTION   = 'dwma_settings';
     const META     = '_dwma_page';
     const NONCE    = 'dwma_page_nonce';
@@ -134,6 +134,11 @@ final class DW_Mobile_Accelerator {
         add_action('wp_enqueue_scripts', [__CLASS__, 'tweak_scripts'], 9999);
         add_filter('style_loader_tag', [__CLASS__, 'style_tag'], 20, 4);
         add_filter('script_loader_tag', [__CLASS__, 'script_tag'], 20, 3);
+
+        // Hardgecodeerde scripts (bijv. cookiebanner via header-code) ook async kunnen maken.
+        if ('' !== trim((string) $o['async_scripts'])) {
+            ob_start([__CLASS__, 'buffer_head_scripts']);
+        }
 
         if ($page_on && !empty(self::$page['lcp_id'])) {
             add_filter('wp_get_attachment_image_attributes', [__CLASS__, 'image_attributes'], 20, 2);
@@ -291,6 +296,47 @@ final class DW_Mobile_Accelerator {
             }
         }
         return $tag;
+    }
+
+    /**
+     * Output-buffer: voegt async toe aan <script src> in de <head> die matchen met "Scripts async laden",
+     * ook als ze niet via wp_enqueue_script zijn toegevoegd (header-code, Elementor Custom Code, thema).
+     */
+    public static function buffer_head_scripts($html) {
+        if (!is_string($html) || '' === $html) {
+            return $html;
+        }
+        $end = stripos($html, '</head>');
+        if (false === $end || false === stripos(substr($html, 0, 2000), '<html')) {
+            return $html;
+        }
+        $patterns = self::lines(self::options()['async_scripts']);
+        if (!$patterns) {
+            return $html;
+        }
+
+        $head = substr($html, 0, $end);
+        $head = preg_replace_callback(
+            '#<script\b([^>]*)>#i',
+            static function ($m) use ($patterns) {
+                $attrs = $m[1];
+                if (!preg_match('#\bsrc\s*=\s*(["\']?)([^"\'\s>]+)\1#i', $attrs, $src)) {
+                    return $m[0];
+                }
+                if (preg_match('#\s(async|defer)\b#i', ' ' . $attrs) || preg_match('#\btype\s*=\s*["\']?module#i', $attrs)) {
+                    return $m[0];
+                }
+                foreach ($patterns as $needle) {
+                    if ('' !== $needle && false !== stripos($src[2], $needle)) {
+                        return '<script async' . $attrs . '>';
+                    }
+                }
+                return $m[0];
+            },
+            $head
+        );
+
+        return $head . substr($html, $end);
     }
 
     public static function image_attributes($attr, $attachment) {
@@ -478,7 +524,7 @@ final class DW_Mobile_Accelerator {
                         <p class="description">Grootste winst bij render-blokkering. Breekt alleen als er losse inline <code>jQuery(...)</code>-code in de head staat (bijv. via een header-codeplugin). Test menu, formulieren en sliders.</p></td></tr>
                     <tr><th scope="row">Scripts async laden</th>
                         <td><textarea class="large-text code" rows="3" name="<?php echo self::field_name('async_scripts'); ?>"><?php echo esc_textarea($o['async_scripts']); ?></textarea>
-                        <p class="description">Eén deel van de script-URL per regel, bijv. <code>consent.cookiefirst.com</code>. Werkt alleen voor scripts die via WordPress worden geladen. <strong>Let op bij cookiebanners:</strong> async laden kan automatisch blokkeren van cookies verzwakken. Controleer dit in de CookieFirst-instellingen.</p></td></tr>
+                        <p class="description">Eén deel van de script-URL per regel, bijv. <code>consent.cookiefirst.com</code>. Werkt ook voor scripts die hard in de header staan (bijv. via Elementor Custom Code). <strong>Let op bij cookiebanners:</strong> async laden kan automatisch blokkeren van cookies verzwakken. Controleer dit in de CookieFirst-instellingen.</p></td></tr>
                     <tr><th scope="row">Emoji-script uitschakelen</th>
                         <td><label><input type="checkbox" name="<?php echo self::field_name('disable_emoji'); ?>" value="1" <?php checked($o['disable_emoji'], 1); ?>> WordPress emoji-detectie niet laden</label></td></tr>
                 </table>

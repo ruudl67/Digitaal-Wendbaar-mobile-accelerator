@@ -40,7 +40,7 @@ Pas je de bovenkant van de pagina aan in Elementor, genereer dan de critical CSS
 
 ## Beperkingen
 
-- Async-scripts werken alleen voor scripts die via WordPress (`wp_enqueue_script`) worden geladen, niet voor hardgecodeerde scripts in de header.
+- Async-scripts werken voor scripts in de `<head>`, ook hardgecodeerde; scripts in de body worden niet aangepast.
 - Async CSS gebruikt een `onload`-handler; een strikte Content-Security-Policy kan dat blokkeren.
 - Bij SiteGround *Combine CSS* werkt async per handle niet; de plugin toont dan een waarschuwing.
 - De plugin genereert zelf geen critical CSS.

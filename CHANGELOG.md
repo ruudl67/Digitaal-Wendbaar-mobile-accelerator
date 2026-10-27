@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.3.0
+- "Scripts async laden" werkt nu ook voor scripts die hard in de `<head>` staan (Elementor Custom Code, header-codeplugins, thema), bijv. `consent.js` van CookieFirst. Scripts met `async`, `defer` of `type="module"` blijven ongemoeid; alleen de `<head>` wordt aangepast.
+
 ## 0.2.1
 - Async CSS werkt nu ook voor stylesheets met een media-query (Elementor v4/Atomic breakpoint-bestanden zoals `base-mobile.css`); media-query blijft behouden. Alleen print-CSS wordt overgeslagen.
 
