@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.3.1
+- Ingebouwde GitHub-updater (Plugin Update Checker 5.4, branch `main`): updates verschijnen gewoon bij Plugins, zonder Git Updater.
+
 ## 0.3.0
 - "Scripts async laden" werkt nu ook voor scripts die hard in de `<head>` staan (Elementor Custom Code, header-codeplugins, thema), bijv. `consent.js` van CookieFirst. Scripts met `async`, `defer` of `type="module"` blijven ongemoeid; alleen de `<head>` wordt aangepast.
 

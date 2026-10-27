@@ -3,7 +3,7 @@
  * Plugin Name:       Digitaal Wendbaar Mobile Accelerator
  * Plugin URI:        https://github.com/ruudl67/digitaal-wendbaar-mobile-accelerator
  * Description:       Gerichte mobiele snelheidsoptimalisaties voor Elementor-sites: critical CSS, LCP-preload, jQuery- en scriptoptimalisatie. Werkt naast SiteGround Speed Optimizer.
- * Version:           0.3.0
+ * Version:           0.3.1
  * Requires at least: 6.3
  * Requires PHP:      7.4
  * Author:            Digitaal Wendbaar
@@ -11,17 +11,28 @@
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       dw-mobile-accelerator
- * GitHub Plugin URI: ruudl67/digitaal-wendbaar-mobile-accelerator
- * Primary Branch:    main
  */
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
+/**
+ * Automatisch updaten vanaf GitHub (branch main), net als de andere Digitaal Wendbaar-plugins.
+ */
+if (file_exists(__DIR__ . '/plugin-update-checker/plugin-update-checker.php')) {
+    require_once __DIR__ . '/plugin-update-checker/plugin-update-checker.php';
+    $dwma_update_checker = \YahnisElsts\PluginUpdateChecker\v5\PucFactory::buildUpdateChecker(
+        'https://github.com/ruudl67/Digitaal-Wendbaar-mobile-accelerator',
+        __FILE__,
+        'digitaal-wendbaar-mobile-accelerator'
+    );
+    $dwma_update_checker->setBranch('main');
+}
+
 final class DW_Mobile_Accelerator {
 
-    const VERSION  = '0.3.0';
+    const VERSION  = '0.3.1';
     const OPTION   = 'dwma_settings';
     const META     = '_dwma_page';
     const NONCE    = 'dwma_page_nonce';

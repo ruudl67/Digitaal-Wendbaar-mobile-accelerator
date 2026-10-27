@@ -22,7 +22,7 @@ Alle opties staan standaard **uit**. Zonder instellingen verandert er niets aan 
 4. Open de pagina in WordPress (niet in Elementor) → blok **DW Mobile Accelerator** onder de editor → aanzetten, LCP-URL en critical CSS invullen.
 5. SiteGround-cache legen, PageSpeed mobiel 3× meten. Vergelijk met `?dwma=off`.
 
-**Updates via GitHub:** installeer de gratis plugin [Git Updater](https://git-updater.com/). De header `GitHub Plugin URI` staat al in de plugin.
+**Updates via GitHub:** ingebouwd. Nieuwe versies op de branch `main` verschijnen vanzelf als update bij Plugins (Plugin Update Checker). Git Updater is niet nodig.
 
 ## Aanbevolen volgorde per site
 
