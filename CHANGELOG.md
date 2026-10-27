@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.3.2
+- Scripts async laden: met `defer:` voor een regel krijgt een script `defer` i.p.v. `async` (veilig voor scripts die de DOM nodig hebben, zoals de TranslatePress-taalwisselaar).
+
 ## 0.3.1
 - Ingebouwde GitHub-updater (Plugin Update Checker 5.4, branch `main`): updates verschijnen gewoon bij Plugins, zonder Git Updater.
 
